@@ -55,7 +55,8 @@ import io.vmware.spring.data.support.CassandraDatabaseInitializer;
  * @see org.springframework.context.annotation.Configuration
  * @see org.springframework.data.cassandra.core.cql.session.init.KeyspacePopulator
  * @see org.springframework.data.cassandra.core.cql.session.init.SessionFactoryInitializer
- * @since 1.0.0
+ * @see <a href="https://gist.github.com/mp911de/47de1a32e774f6c34aa2d1293bd367e1">Gist from Mark Paluch</a>
+ * @since 0.1.0
  */
 @SpringBootApplication
 @SuppressWarnings("unused")
