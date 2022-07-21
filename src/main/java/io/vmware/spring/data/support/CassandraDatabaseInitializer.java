@@ -29,18 +29,20 @@ import org.testcontainers.containers.CassandraContainer;
  * @see org.testcontainers.containers.CassandraContainer
  * @since 1.0.0
  */
+@SuppressWarnings("unused")
 public abstract class CassandraDatabaseInitializer implements Runnable {
 
 	public static final int CASSANDRA_DEFAULT_PORT = CqlSessionFactoryBean.DEFAULT_PORT;
 
+	public static final String CASSANDRA_CONTACT_POINTS_PROPERTY = "spring.app.cassandra.contact-points";
 	public static final String CASSANDRA_DEFAULT_HOSTNAME = "localhost";
 	public static final String CASSANDRA_LOCAL_DATACENTER = "datacenter1";
-	public static final String CASSANDRA_KEYSPACE_NAME = "test";
+	public static final String CASSANDRA_SCHEMA_CQL = "cassandra-schema.cql";
+	public static final String CASSANDRA_SYSTEM_KEYSPACE_NAME = "system";
+	public static final String CASSANDRA_TEST_KEYSPACE_NAME = "test";
 	public static final String CASSANDRA_USERS_TABLE_NAME = "Users";
 
-	protected static final String CASSANDRA_CONTACT_POINTS_PROPERTY = "spring.app.cassandra.contact-points";
 	protected static final String CASSANDRA_DOCKER_IMAGE_NAME = "cassandra:latest";
-	protected static final String CASSANDRA_SCHEMA_CQL = "cassandra-schema.cql";
 
 	public static CassandraDatabaseInitializer init() {
 		CassandraDatabaseInitializer initializer = new CassandraDatabaseInitializer() { };

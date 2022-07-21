@@ -22,9 +22,13 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Optional;
 
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.CqlSessionBuilder;
+
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.cassandra.CassandraProperties;
 import org.springframework.boot.autoconfigure.cassandra.CqlSessionBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -81,13 +85,35 @@ public class SpringCassandraApplication {
 	static class CassandraApplicationConfiguration {
 
 		@Bean
-		CqlSessionBuilderCustomizer cqlSessionBuilderCustomizer() {
+		@Profile("no-boot")
+		CqlSession cassandraSession(CassandraProperties properties, CqlSessionBuilder cqlSessionBuilder) {
+
+			CqlSession systemSession = cqlSessionBuilder
+				.withKeyspace(CassandraDatabaseInitializer.CASSANDRA_SYSTEM_KEYSPACE_NAME)
+				.withLocalDatacenter(properties.getLocalDatacenter())
+				.addContactPoint(newSocketAddress())
+				.build();
+
+			KeyspacePopulator keyspacePopulator =
+				new ResourceKeyspacePopulator(new ClassPathResource(CassandraDatabaseInitializer.CASSANDRA_SCHEMA_CQL));
+			keyspacePopulator.populate(systemSession);
+			systemSession.close();
+
+			return cqlSessionBuilder
+				.withKeyspace(properties.getKeyspaceName())
+				.addContactPoint(newSocketAddress())
+				.build();
+		}
+
+		@Bean
+		@Profile("!no-boot")
+		CqlSessionBuilderCustomizer cqlSessionBuilderCustomizer(CassandraProperties properties) {
 
 			logger.debug("Customizing the CqlSessionBuilder...");
 
 			return cqlSessionBuilder -> cqlSessionBuilder
-				.withLocalDatacenter(CassandraDatabaseInitializer.CASSANDRA_LOCAL_DATACENTER)
-				.withKeyspace(CassandraDatabaseInitializer.CASSANDRA_KEYSPACE_NAME)
+				.withLocalDatacenter(properties.getLocalDatacenter())
+				.withKeyspace(properties.getKeyspaceName())
 				.addContactPoint(newSocketAddress());
 		}
 
@@ -149,11 +175,13 @@ public class SpringCassandraApplication {
 
 			Optional<User> jonDoe = userRepository.findByName("Jon Doe");
 
+			logger.info("User is [{}]", jonDoe);
+
 			assertThat(jonDoe).isNotNull();
 			assertThat(jonDoe.isPresent()).isTrue();
 			assertThat(jonDoe.map(User::getName).orElse(null)).isEqualTo("Jon Doe");
 
-			logger.info("Spring Cassandra Application Initialized!!!");
+			logger.info("Spring Cassandra application initialized!");
 		};
 	}
 }

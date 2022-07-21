@@ -15,7 +15,6 @@
  */
 package io.vmware.spring.data.model;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.cassandra.core.mapping.Indexed;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
@@ -43,7 +42,7 @@ import lombok.ToString;
 @SuppressWarnings("unused")
 public class User {
 
-	@Id @PrimaryKey @Setter
+	@PrimaryKey @Setter
 	private Integer id;
 
 	@lombok.NonNull @Indexed
