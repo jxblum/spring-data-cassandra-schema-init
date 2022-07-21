@@ -1,0 +1,13 @@
+[[spring-boot-data-cassandra-application]]
+= Spring Boot / Data for Apache Cassandra Application
+
+This project is a simple test/example to demonstrate the use of _Spring Boot_ and _Spring Data for Apache Cassandra_
+(SD Cassandra) to connect to an Apache Cassandra database bootstrapped, configured and initialized with
+*Testcontainers*.
+
+This test/example uses *Testcontainers'* `CassandraContainer` to bootstrap and configure an Apache Cassandra database
+and then executes the `cassandra-schema.cql` script to initialize the database schema.
+
+After the Apache Cassandra database comes online, the _Spring Boot_ application then starts up as an Apache Cassandra
+client using DataStax's OSS Driver and _Spring Data for Apache Cassandra_ to connect to the database. The application
+uses an SD Cassandra `SesssionFactoryInitializer` to initialize the `test` schema, `Users` table with data.
